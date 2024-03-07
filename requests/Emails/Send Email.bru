@@ -1,0 +1,19 @@
+meta {
+  name: Send Email
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/notifications/emails
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "to": "myleshenp@protonmail.com",
+    "subject": "Test mail using springboot",
+    "text": "Hello from spring boot"
+  }
+}
