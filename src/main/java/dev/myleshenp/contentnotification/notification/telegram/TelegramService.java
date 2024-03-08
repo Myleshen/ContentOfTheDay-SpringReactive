@@ -34,27 +34,29 @@ public class TelegramService {
     }
 
     public void messageListener(Update update) {
-        var chatId = update.message().chat().id();
-        var user = update.message().from();
-        var bot = TelegramConfig.getTelegramBot();
-        if (Objects.equals(update.message().text(), "/start")) {
-            bot.execute(new SendMessage(chatId, getWelcomeMessage()));
-            saveSubscription(createEntity(chatId, user)).subscribe();
-        } else if (Objects.equals(update.message().text(), "/stop")) {
-            bot.execute(new SendMessage(chatId, getSubscriptionStopMessage()));
-            deleteSubscription(chatId.toString()).subscribe();
-        } else if (Objects.equals(update.message().text(), "/restart")) {
-            bot.execute(new SendMessage(chatId, getRestartMessage()));
-            saveSubscription(createEntity(chatId, user)).subscribe();
-        } else if (Objects.equals(update.message().text(), "/content")) {
-            contentService
-                    .getRandomContent(CONTENT_SIZE_FOR_NOTIFICATIONS)
-                    .subscribe(
-                            content -> {
-                                bot.execute(
-                                        new SendMessage(
-                                                chatId, getMessage(content, messageTemplate)));
-                            });
+        if(update.message() != null && update.message().text() != null) {
+            var chatId = update.message().chat().id();
+            var user = update.message().from();
+            var bot = TelegramConfig.getTelegramBot();
+            if (Objects.equals(update.message().text(), "/start")) {
+                bot.execute(new SendMessage(chatId, getWelcomeMessage()));
+                saveSubscription(createEntity(chatId, user)).subscribe();
+            } else if (Objects.equals(update.message().text(), "/stop")) {
+                bot.execute(new SendMessage(chatId, getSubscriptionStopMessage()));
+                deleteSubscription(chatId.toString()).subscribe();
+            } else if (Objects.equals(update.message().text(), "/restart")) {
+                bot.execute(new SendMessage(chatId, getRestartMessage()));
+                saveSubscription(createEntity(chatId, user)).subscribe();
+            } else if (Objects.equals(update.message().text(), "/content")) {
+                contentService
+                        .getRandomContent(CONTENT_SIZE_FOR_NOTIFICATIONS)
+                        .subscribe(
+                                content -> {
+                                    bot.execute(
+                                            new SendMessage(
+                                                    chatId, getMessage(content, messageTemplate)));
+                                });
+            }
         }
     }
 
