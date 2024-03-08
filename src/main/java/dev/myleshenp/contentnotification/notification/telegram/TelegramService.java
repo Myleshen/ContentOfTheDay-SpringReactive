@@ -38,16 +38,16 @@ public class TelegramService {
             var chatId = update.message().chat().id();
             var user = update.message().from();
             var bot = TelegramConfig.getTelegramBot();
-            if (Objects.equals(update.message().text(), "/start")) {
+            if (update.message().text().contains("/start")) {
                 bot.execute(new SendMessage(chatId, getWelcomeMessage()));
                 saveSubscription(createEntity(chatId, user)).subscribe();
-            } else if (Objects.equals(update.message().text(), "/stop")) {
+            } else if (update.message().text().contains("/stop")) {
                 bot.execute(new SendMessage(chatId, getSubscriptionStopMessage()));
                 deleteSubscription(chatId.toString()).subscribe();
-            } else if (Objects.equals(update.message().text(), "/restart")) {
+            } else if (update.message().text().contains("/restart")) {
                 bot.execute(new SendMessage(chatId, getRestartMessage()));
                 saveSubscription(createEntity(chatId, user)).subscribe();
-            } else if (Objects.equals(update.message().text(), "/content")) {
+            } else if (update.message().text().contains("/content")) {
                 contentService
                         .getRandomContent(CONTENT_SIZE_FOR_NOTIFICATIONS)
                         .subscribe(
