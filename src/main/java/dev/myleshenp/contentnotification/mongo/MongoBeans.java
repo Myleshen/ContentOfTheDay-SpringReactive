@@ -12,6 +12,7 @@ public class MongoBeans {
 
     @Value("${spring.data.mongodb.uri}")
     String mongoURI;
+
     @Value("${spring.data.mongodb.database}")
     String mongoDatabase;
 

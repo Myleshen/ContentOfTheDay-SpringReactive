@@ -5,3 +5,18 @@ spring:
       port: ${DB_PORT}
       database: ${DB_COLLECTION}
       uri: ${DB_URI}
+
+notification:
+  email:
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+
+telegram:
+  bot:
+    token: ${TG_BOT_TOKEN}
+
+email:
+  template: "classpath://EmailTemplate.html"
+
+message:
+  template: "classpath//MessageTemplate.txt"

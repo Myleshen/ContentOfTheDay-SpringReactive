@@ -1,5 +1,8 @@
 package dev.myleshenp.contentnotification.content;
 
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.EMAIL_TEMPLATE;
+
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import dev.myleshenp.contentnotification.notification.email.EmailRequest;
 import dev.myleshenp.contentnotification.notification.email.EmailService;
@@ -13,50 +16,72 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ContentService {
 
-  final ContentRepository contentRepository;
-  final ReactiveMongoTemplate reactiveMongoTemplate;
-  final MongoDatabase mongoDatabase;
-  final EmailService emailService;
+    final ContentRepository contentRepository;
+    final ReactiveMongoTemplate reactiveMongoTemplate;
+    final MongoDatabase mongoDatabase;
+    final EmailService emailService;
+    String emailTemplate = EMAIL_TEMPLATE;
 
-  Flux<Content> getAllContent() {
-    return contentRepository.findAll();
-  }
+    Flux<Content> getAllContent() {
+        return contentRepository.findAll();
+    }
 
-  Mono<Content> getById(String id) {
-    return contentRepository.findById(id);
-  }
+    Mono<Content> getById(String id) {
+        return contentRepository.findById(id);
+    }
 
-  Mono<Content> addContent(Content content) {
-    return contentRepository.save(content);
-  }
+    Mono<Content> addContent(Content content) {
+        return contentRepository.save(content);
+    }
 
-  Flux<Content> getRandomContent(int size) {
-    SampleOperation sampleOperation = Aggregation.sample(size);
-    TypedAggregation<Content> aggregation = TypedAggregation.newAggregation(Content.class, sampleOperation);
-    return reactiveMongoTemplate.aggregate(aggregation, Content.class);
-  }
+    public Flux<Content> getRandomContent(int size) {
+        SampleOperation sampleOperation = Aggregation.sample(size);
+        TypedAggregation<Content> aggregation =
+                TypedAggregation.newAggregation(Content.class, sampleOperation);
+        return reactiveMongoTemplate.aggregate(aggregation, Content.class);
+    }
 
-  Boolean sendTodayContentAsEmail(String destinationEmail) {
-    var content = getRandomContent(1).blockFirst();
-    var text = """
-            Content Type: %s
-            
-            "%s"
-            
-            /t/t/t -- %s
-            """.formatted(content.type(), content.text(), content.author());
-    EmailRequest emailRequest = EmailRequest.builder()
-            .to(destinationEmail)
-            .subject("Content of the Day!!")
-            .text(text)
-            .build();
-    return emailService.sendNotification(emailRequest).block();
-  }
+    String sendTodayContentAsEmail(String destinationEmail) {
+        getRandomContent(CONTENT_SIZE_FOR_NOTIFICATIONS)
+                .subscribe(
+                        content -> {
+                            EmailRequest emailRequest =
+                                    EmailRequest.builder()
+                                            .to(destinationEmail)
+                                            .subject("Content of the Day!!")
+                                            .text(getEmail(content))
+                                            .build();
+                            emailService
+                                    .sendNotification(emailRequest)
+                                    .doOnError(
+                                            throwable ->
+                                                    log.error(
+                                                            String.format(
+                                                                    "Email Could not be sent to the following email address: %s, due"
+                                                                            + " to: %s",
+                                                                    emailRequest.to(),
+                                                                    throwable
+                                                                            .getLocalizedMessage())))
+                                    .subscribe(
+                                            result ->
+                                                    log.info(
+                                                            String.format(
+                                                                    "Email sent successfully to %s",
+                                                                    emailRequest.to())));
+                        });
+        return "Request Accepted";
+    }
 
+    String getEmail(Content content) {
+        var currentEmail = emailTemplate;
+        currentEmail = currentEmail.replace("${type}", content.type());
+        currentEmail = currentEmail.replace("${quote}", content.text());
+        currentEmail = currentEmail.replace("${author}", content.author());
+        return currentEmail;
+    }
 }

@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  content-notification:
+    image: cotd:0.0.1
+    container_name: content-notification
+    env_file:
+      - .env
+    ports:
+      - "6000:8080"
+    restart: unless-stopped
