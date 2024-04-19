@@ -1,8 +1,5 @@
 package dev.myleshenp.contentnotification.content;
 
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.EMAIL_TEMPLATE;
-
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import dev.myleshenp.contentnotification.notification.email.EmailRequest;
 import dev.myleshenp.contentnotification.notification.email.EmailService;
@@ -12,9 +9,13 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.SampleOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.EMAIL_TEMPLATE;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +41,19 @@ public class ContentService {
     }
 
     public Flux<Content> getRandomContent(int size) {
+        return getRandomContent(size, null);
+    }
+
+    public Flux<Content> getRandomContent(int size, String userName) {
+        TypedAggregation<Content> aggregation;
         SampleOperation sampleOperation = Aggregation.sample(size);
-        TypedAggregation<Content> aggregation =
-                TypedAggregation.newAggregation(Content.class, sampleOperation);
+        if (userName == null) {
+            aggregation = TypedAggregation.newAggregation(Content.class, sampleOperation);
+        } else {
+            aggregation = TypedAggregation.newAggregation(Content.class, Aggregation.match(
+                    Criteria.where("userName").is(userName)), sampleOperation
+            );
+        }
         return reactiveMongoTemplate.aggregate(aggregation, Content.class);
     }
 

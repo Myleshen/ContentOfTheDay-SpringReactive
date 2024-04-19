@@ -1,15 +1,17 @@
 package dev.myleshenp.contentnotification.content;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Builder
 @Document
+@With
 public record Content(
         @Id String id,
         @NotNull String type,
         @NotNull String text,
         @NotNull String author,
-        String reference) {}
+        String userName,
+        String reference) {
+}

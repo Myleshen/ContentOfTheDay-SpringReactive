@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/api/contents
+  url: {{BASE_URL}}/api/contents
   body: json
   auth: none
 }
@@ -13,8 +13,8 @@ post {
 body:json {
   {
     "type": "Quote",
-    "text": "Human strength lies in the ability to change yourself.",
-    "author": "Saitama",
+    "text": "Test Quote.",
+    "author": "Myleshen",
     "reference": "One Punch Man"
   }
 }

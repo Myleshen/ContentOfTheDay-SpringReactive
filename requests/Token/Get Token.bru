@@ -1,0 +1,23 @@
+meta {
+  name: Get Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{KEYCLOAK_BASE_URI}}/realms/cotd/protocol/openid-connect/token
+  body: formUrlEncoded
+  auth: none
+}
+
+body:form-urlencoded {
+  grant_type: password
+  client_id: cotd-spring
+  username: contact@myleshenp.dev
+  password: myleshen
+  ~client_secret: srjlKmCtjHkEhytifRG2DpkRKtxQ1pa1
+}
+
+script:post-response {
+  bru.setVar("authToken",res.body.access_token)
+}

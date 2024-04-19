@@ -20,16 +20,15 @@ public class EmailService {
     final JavaMailSender mailSender;
     final EmailRequestRepository repository;
 
-    public Mono<EmailRequest> sendNotification(Record request) {
-        var emailRequest = (EmailRequest) request;
+    public Mono<EmailRequest> sendNotification(EmailRequest request) {
         var mail = mailSender.createMimeMessage();
         try {
             mail.setFrom(new InternetAddress("mylesuge@gmail.com"));
-            mail.setRecipients(MimeMessage.RecipientType.TO, emailRequest.to());
-            mail.setSubject(emailRequest.subject());
-            mail.setContent(emailRequest.text(), "text/html; charset=utf-8");
+            mail.setRecipients(MimeMessage.RecipientType.TO, request.to());
+            mail.setSubject(request.subject());
+            mail.setContent(request.text(), "text/html; charset=utf-8");
             mailSender.send(mail);
-            return Mono.just(emailRequest);
+            return Mono.just(request);
         } catch (MailException | MessagingException e) {
             log.error(e.getMessage());
             return Mono.error(e);
@@ -37,6 +36,8 @@ public class EmailService {
     }
 
     @Async
-    @Scheduled(cron = "* * 9 * * *")
-    public void runAsScheduled() {}
+    @Scheduled(cron = "* * 9 * * *", zone = "IST")
+    public void runAsScheduled() {
+
+    }
 }

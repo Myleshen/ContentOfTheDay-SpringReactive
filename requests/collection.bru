@@ -1,0 +1,11 @@
+auth {
+  mode: none
+}
+
+auth:bearer {
+  token: 
+}
+
+script:pre-request {
+  req.setHeader("Authorization", `Bearer `+ bru.getVar("authToken"))
+}

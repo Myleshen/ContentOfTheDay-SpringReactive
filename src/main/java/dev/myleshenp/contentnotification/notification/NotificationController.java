@@ -17,28 +17,9 @@ public class NotificationController {
     final EmailService emailService;
     final TelegramService telegramService;
 
-    @GetMapping("/emails")
-    Flux<EmailRequest> getAllEmailSubscriptions() {
-        // TODO
-        return null;
-    }
-
-    @GetMapping("/emails/{id}")
-    Mono<EmailRequest> getEmailSubscriptionById(@PathVariable String id) {
-        // TODO
-        return null;
-    }
-
     @PostMapping("/emails")
-    Mono<Boolean> addNewEmailSubscription(@RequestBody EmailRequest emailRequest) {
-        // TODO
-        return null;
-    }
-
-    @GetMapping("/emails/send")
-    Mono<EmailRequest> sendEmailNotification() {
-        // TODO
-        return null;
+    Mono<EmailRequest> sendEmail(@RequestBody EmailRequest emailRequest) {
+        return emailService.sendNotification(emailRequest);
     }
 
     @GetMapping("/telegram")

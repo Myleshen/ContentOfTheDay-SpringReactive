@@ -7,7 +7,6 @@ import static dev.myleshenp.contentnotification.notification.telegram.TelegramMe
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import dev.myleshenp.contentnotification.content.ContentService;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -25,16 +24,16 @@ public class TelegramService {
     final ContentService contentService;
     String messageTemplate = MESSAGE_TEMPLATE;
 
-    @Async
-    @Scheduled(cron = "0 0 9 * * *")
-    public void runAsScheduled() {
-        repository
-                .findAll()
-                .subscribe(notificationEntity -> sendNotification(notificationEntity.chatId()));
-    }
+//    @Async
+//    @Scheduled(cron = "0 0 9 * * *")
+//    public void runAsScheduled() {
+//        repository
+//                .findAll()
+//                .subscribe(notificationEntity -> sendNotification(notificationEntity.chatId()));
+//    }
 
     public void messageListener(Update update) {
-        if(update.message() != null && update.message().text() != null) {
+        if (update.message() != null && update.message().text() != null) {
             var chatId = update.message().chat().id();
             var user = update.message().from();
             var bot = TelegramConfig.getTelegramBot();
