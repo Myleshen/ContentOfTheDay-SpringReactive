@@ -10,6 +10,9 @@ public class TelegramMessageHelper {
         currentMessage = currentMessage.replace("${type}", content.type());
         currentMessage = currentMessage.replace("${quote}", content.text());
         currentMessage = currentMessage.replace("${author}", content.author());
+        if (content.reference() != null) {
+            currentMessage = currentMessage.replace("${reference}", content.reference());
+        }
         return currentMessage;
     }
 
@@ -45,12 +48,12 @@ public class TelegramMessageHelper {
     static String getAddNewContentMessage(Content content) {
         return String.format(
                 """
-                New Content Added:
-                Type: %s
-                Text: %s
-                Author: %s
-                Reference: %s
-                """,
+                        New Content Added:
+                        Type: %s
+                        Text: %s
+                        Author: %s
+                        Reference: %s
+                        """,
                 content.type(), content.text(), content.author(), content.reference());
     }
 

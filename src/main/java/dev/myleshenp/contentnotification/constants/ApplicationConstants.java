@@ -37,5 +37,7 @@ public class ApplicationConstants {
                     ${quote}
 
                             --- ${author}
+
+                    Reference: ${reference}
                     """;
 }

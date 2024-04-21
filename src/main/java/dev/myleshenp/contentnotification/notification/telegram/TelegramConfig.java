@@ -17,7 +17,8 @@ public class TelegramConfig {
     @Value("${telegram.bot.token}")
     String botToken;
 
-    @Getter static TelegramBot telegramBot;
+    @Getter
+    static TelegramBot telegramBot;
 
     final TelegramService service;
 

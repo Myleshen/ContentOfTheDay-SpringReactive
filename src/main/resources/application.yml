@@ -21,3 +21,11 @@ notification:
 telegram:
   bot:
     token: ${TG_BOT_TOKEN}
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG

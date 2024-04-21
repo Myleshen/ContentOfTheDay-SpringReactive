@@ -1,16 +1,11 @@
 package dev.myleshenp.contentnotification.notification.telegram;
 
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.MESSAGE_TEMPLATE;
-import static dev.myleshenp.contentnotification.notification.telegram.TelegramMessageHelper.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import dev.myleshenp.contentnotification.content.Content;
 import dev.myleshenp.contentnotification.content.ContentService;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -18,6 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.regex.Pattern;
+
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.MESSAGE_TEMPLATE;
+import static dev.myleshenp.contentnotification.notification.telegram.TelegramMessageHelper.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class TelegramService {
     public void messageListener(Update update) {
         if (update.message() != null && update.message().text() != null) {
             var chatId = update.message().chat().id();
+            log.info("Received message from chatId: {}", chatId);
             var user = update.message().from();
             var bot = TelegramConfig.getTelegramBot();
             var pattern = Pattern.compile("^[/a-z_]*");
@@ -62,7 +64,7 @@ public class TelegramService {
                 }
                 case CONTENT -> {
                     contentService
-                            .getRandomContent(CONTENT_SIZE_FOR_NOTIFICATIONS)
+                            .getRandomContent(CONTENT_SIZE_FOR_NOTIFICATIONS, chatId.toString())
                             .subscribe(
                                     content -> {
                                         bot.execute(
@@ -81,7 +83,9 @@ public class TelegramService {
                     var content = parseMessageToContent(jsonContent);
                     if (content == null) {
                         bot.execute(new SendMessage(chatId, getAddNewContentErrorMessage()));
+                        return;
                     }
+                    content = content.withUserName(chatId.toString());
                     contentService
                             .addContent(content)
                             .subscribe(
@@ -94,6 +98,7 @@ public class TelegramService {
                     bot.execute(new SendMessage(chatId, getTemplateAddNewContentMessage()));
                 }
             }
+            log.info("Sent message to chatId: {}", chatId);
         }
     }
 
@@ -132,7 +137,7 @@ public class TelegramService {
         try {
             return objectMapper.readValue(jsonMessage, Content.class);
         } catch (JsonProcessingException e) {
-            log.error("Cannot parse message to content", e);
+            log.error("Cannot parse message to content {}", jsonMessage);
             return null;
         }
     }

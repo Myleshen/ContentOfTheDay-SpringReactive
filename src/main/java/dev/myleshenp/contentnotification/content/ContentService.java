@@ -1,9 +1,5 @@
 package dev.myleshenp.contentnotification.content;
 
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.EMAIL_TEMPLATE;
-
-import com.mongodb.reactivestreams.client.MongoDatabase;
 import dev.myleshenp.contentnotification.notification.email.EmailRequest;
 import dev.myleshenp.contentnotification.notification.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +13,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.EMAIL_TEMPLATE;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,7 +23,6 @@ public class ContentService {
 
     final ContentRepository contentRepository;
     final ReactiveMongoTemplate reactiveMongoTemplate;
-    final MongoDatabase mongoDatabase;
     final EmailService emailService;
     String emailTemplate = EMAIL_TEMPLATE;
 
@@ -53,7 +51,11 @@ public class ContentService {
             aggregation =
                     TypedAggregation.newAggregation(
                             Content.class,
-                            Aggregation.match(Criteria.where("userName").is(userName)),
+                            Aggregation.match(new Criteria().orOperator(
+                                    Criteria.where("userName").is(userName),
+                                    Criteria.where("userName").is(""),
+                                    Criteria.where("userName").isNull()
+                            )),
                             sampleOperation);
         }
         return reactiveMongoTemplate.aggregate(aggregation, Content.class);
