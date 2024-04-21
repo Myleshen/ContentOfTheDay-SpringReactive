@@ -1,11 +1,16 @@
 package dev.myleshenp.contentnotification.notification.telegram;
 
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.MESSAGE_TEMPLATE;
+import static dev.myleshenp.contentnotification.notification.telegram.TelegramMessageHelper.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import dev.myleshenp.contentnotification.content.Content;
 import dev.myleshenp.contentnotification.content.ContentService;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -13,12 +18,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.regex.Pattern;
-
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.MESSAGE_TEMPLATE;
-import static dev.myleshenp.contentnotification.notification.telegram.TelegramMessageHelper.*;
 
 @Service
 @RequiredArgsConstructor
@@ -79,9 +78,13 @@ public class TelegramService {
                     if (content == null) {
                         bot.execute(new SendMessage(chatId, getAddNewContentErrorMessage()));
                     }
-                    contentService.addContent(content).subscribe(x ->
-                            bot.execute(new SendMessage(chatId, getAddNewContentMessage(x)))
-                    );
+                    contentService
+                            .addContent(content)
+                            .subscribe(
+                                    x ->
+                                            bot.execute(
+                                                    new SendMessage(
+                                                            chatId, getAddNewContentMessage(x))));
                 }
                 case DEMO_ADD_CONTENT -> {
                     bot.execute(new SendMessage(chatId, getTemplateAddNewContentMessage()));

@@ -43,13 +43,15 @@ public class TelegramMessageHelper {
     }
 
     static String getAddNewContentMessage(Content content) {
-        return String.format("""
+        return String.format(
+                """
                 New Content Added:
                 Type: %s
                 Text: %s
                 Author: %s
                 Reference: %s
-                """, content.type(), content.text(), content.author(), content.reference());
+                """,
+                content.type(), content.text(), content.author(), content.reference());
     }
 
     static String getAddNewContentErrorMessage() {
