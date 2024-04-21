@@ -24,6 +24,8 @@ public class TelegramMessageHelper {
                 "/stop"  -> To stop the daily notifications
                 "/restart" -> To restart the daily notifications
                 "/content" -> Get a random content on demand
+                "/add_content" -> Add a new content
+                "/get_template_add_content" -> Template for adding new content (Send this to /add-content command)
                 """;
     }
 
@@ -37,6 +39,35 @@ public class TelegramMessageHelper {
         return """
                 Sorry to see you go, but you can still get added back in anytime using the command "/restart"
                 Have a great day!.
+                """;
+    }
+
+    static String getAddNewContentMessage(Content content) {
+        return String.format("""
+                New Content Added:
+                Type: %s
+                Text: %s
+                Author: %s
+                Reference: %s
+                """, content.type(), content.text(), content.author(), content.reference());
+    }
+
+    static String getAddNewContentErrorMessage() {
+        return """
+                Please use the /get_template_add_content command to get the template and add your content in the same format.
+                """;
+    }
+
+    static String getTemplateAddNewContentMessage() {
+        return """
+                /add_content
+
+                {
+                    "type": "<type-of-content>",
+                    "text": "<text>",
+                    "author": "<author>",
+                    "reference": "<reference>"
+                }
                 """;
     }
 

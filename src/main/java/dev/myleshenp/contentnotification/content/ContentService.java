@@ -28,15 +28,15 @@ public class ContentService {
     final EmailService emailService;
     String emailTemplate = EMAIL_TEMPLATE;
 
-    Flux<Content> getAllContent() {
+    public Flux<Content> getAllContent() {
         return contentRepository.findAll();
     }
 
-    Mono<Content> getById(String id) {
+    public Mono<Content> getById(String id) {
         return contentRepository.findById(id);
     }
 
-    Mono<Content> addContent(Content content) {
+    public Mono<Content> addContent(Content content) {
         return contentRepository.save(content);
     }
 
