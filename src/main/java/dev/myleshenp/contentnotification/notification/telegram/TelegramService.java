@@ -72,6 +72,10 @@ public class TelegramService {
                                     });
                 }
                 case ADD_CONTENT -> {
+                    if (!update.message().text().contains("{")) {
+                        bot.execute(new SendMessage(chatId, getAddNewContentErrorMessage()));
+                        return;
+                    }
                     var jsonContent =
                             update.message().text().substring(update.message().text().indexOf("{"));
                     var content = parseMessageToContent(jsonContent);
@@ -105,8 +109,8 @@ public class TelegramService {
                             var bot = TelegramConfig.getTelegramBot();
                             bot.execute(
                                     new SendMessage(chatId, getMessage(content, messageTemplate)));
+                            log.info("Successfully sent message to {}", chatId);
                         });
-        log.info("Successfully sent message to {}", chatId);
     }
 
     public Flux<TelegramNotificationEntity> getAllSubscriptions() {
