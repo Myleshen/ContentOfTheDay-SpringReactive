@@ -24,13 +24,13 @@ public class TelegramService {
     final ContentService contentService;
     String messageTemplate = MESSAGE_TEMPLATE;
 
-//    @Async
-//    @Scheduled(cron = "0 0 9 * * *")
-//    public void runAsScheduled() {
-//        repository
-//                .findAll()
-//                .subscribe(notificationEntity -> sendNotification(notificationEntity.chatId()));
-//    }
+    @Async
+    @Scheduled(cron = "0 0 9 * * *")
+    public void runAsScheduled() {
+        repository
+                .findAll()
+                .subscribe(notificationEntity -> sendNotification(notificationEntity.chatId()));
+    }
 
     public void messageListener(Update update) {
         if (update.message() != null && update.message().text() != null) {

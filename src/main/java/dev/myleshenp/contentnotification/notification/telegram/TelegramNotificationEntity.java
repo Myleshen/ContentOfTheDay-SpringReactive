@@ -14,5 +14,4 @@ public record TelegramNotificationEntity(
         @Indexed(unique = true) String chatId,
         String firstName,
         String lastName,
-        String userName) {
-}
+        String userName) {}

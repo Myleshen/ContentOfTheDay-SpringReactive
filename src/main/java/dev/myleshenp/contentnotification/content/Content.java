@@ -13,5 +13,4 @@ public record Content(
         @NotNull String text,
         @NotNull String author,
         String userName,
-        String reference) {
-}
+        String reference) {}

@@ -1,5 +1,7 @@
 package dev.myleshenp.contentnotification.content;
 
+import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
+
 import dev.myleshenp.contentnotification.notification.email.EmailRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +11,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import static dev.myleshenp.contentnotification.constants.ApplicationConstants.CONTENT_SIZE_FOR_NOTIFICATIONS;
 
 @RestController
 @RequestMapping("/api/contents")
@@ -31,7 +31,8 @@ public class ContentController {
     }
 
     @PostMapping
-    Mono<Content> addContent(@Valid @RequestBody Content content, @AuthenticationPrincipal Jwt jwt) {
+    Mono<Content> addContent(
+            @Valid @RequestBody Content content, @AuthenticationPrincipal Jwt jwt) {
         content = content.withUserName(jwt.getClaims().get("preferred_username").toString());
         return contentService.addContent(content);
     }

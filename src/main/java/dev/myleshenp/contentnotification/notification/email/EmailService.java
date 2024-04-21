@@ -37,7 +37,5 @@ public class EmailService {
 
     @Async
     @Scheduled(cron = "* * 9 * * *", zone = "IST")
-    public void runAsScheduled() {
-
-    }
+    public void runAsScheduled() {}
 }
