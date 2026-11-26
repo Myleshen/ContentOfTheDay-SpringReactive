@@ -15,7 +15,7 @@
     <description>content-notification</description>
     <properties>
         <java.version>21</java.version>
-        <spotless.version>2.43.0</spotless.version>
+        <spotless.version>3.11.0</spotless.version>
     </properties>
     <dependencies>
         <dependency>
